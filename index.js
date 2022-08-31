@@ -1,9 +1,11 @@
 const gameBoard = (function () {
 	const _states = {
 		empty: null,
-		player1: false,
-		player2: true,
+		player1: 69,
+		player2: 420,
 	};
+
+	const _AI = { state: _states.player2, level: 'normal' };
 
 	const _board = Array(9).fill(_states.empty);
 
@@ -23,9 +25,10 @@ const gameBoard = (function () {
 	// has three 0es corresponding to the combination the player wins
 	// (move (bitwise) OR winning number) === move + winning number
 	const _hasWon = function (player) {
-		const move = _getMove(player);
-		for (const num of _winningNumbers)
-			if ((move | num) === move + num) return true;
+		const moves = _getMoves(player);
+		for (let i = _winningNumbers.length - 1; i >= 0; i--)
+			if ((moves | _winningNumbers[i]) === moves + _winningNumbers[i])
+				return true;
 		return false;
 	};
 
@@ -33,8 +36,8 @@ const gameBoard = (function () {
 	// has the same length as the board,
 	// has 0es corresponding to the player's moves
 	// 1s everywhere else
-	const _getMove = function (player) {
-		// working, less performant implementation
+	const _getMoves = function (player) {
+		// logically equivalent, but less performant implementation
 		// return parseInt(_board.map(tile => Number(tile !== player)).join(''), 2);
 		let move = 0;
 		for (let i = _board.length - 1; i >= 0; i--) {
@@ -47,17 +50,73 @@ const gameBoard = (function () {
 		return _board.every(tile => tile !== _states.empty);
 	};
 
+	const _AIMove = function () {
+		return {
+			player: _AI.state,
+			index: _AI.level === 'normal' ? _AIMoveNormal() : _AIMoveEasy(),
+		};
+	};
+
+	// returns
+	const _AIMoveNormal = function () {
+		return _AIThreeAdjacent() ?? _AITwoAdjacent() ?? _AIMoveEasy();
+	};
+
+	// checks if the AI can win this turn,
+	// returns index of move or false if it can't
+	const _AIThreeAdjacent = function () {
+		for (let i = _board.length - 1; i >= 0; i--)
+			if (_board[i] === _states.empty) {
+				_board[i] = _AI.state;
+				if (_hasWon(_AI.state)) {
+					_board[i] = _states.empty;
+					return i;
+				}
+				_board[i] = _states.empty;
+			}
+		return null;
+	};
+
+	// check if the AI can win in two moves
+	const _AITwoAdjacent = function () {
+		for (let i = _board.length - 1; i >= 0; i--)
+			if (_board[i] === _states.empty) {
+				_board[i] = _AI.state;
+				for (let j = i - 1; j >= 0; j--) {
+					_board[j] = _AI.state;
+					if (_hasWon(_AI.state)) {
+						_board[i] = _states.empty;
+						_board[j] = _states.empty;
+						return _random(2) ? i : j;
+					}
+					_board[j] = _states.empty;
+				}
+				_board[i] = _states.empty;
+			}
+		return null;
+	};
+
+	//returns a the index of a random empty tile
+	const _AIMoveEasy = function () {
+		for (let i = _board.length - 1; i >= 0; i--)
+			if (_board.length[i] === _states.empty) return i;
+	};
+
+	const _random = function (n) {
+		return Math.floor(Math.random() * n);
+	};
+
 	//updates the tile and returns true if it is empty
 	//returns false if it is not
-	const update = function (player, index) {
+	const update = function (move) {
 		//validity checks
-		if (player !== _states.player1 && player !== _states.player2)
+		if (move.player !== _states.player1 && move.player !== _states.player2)
 			throw 'invalid player for gameBoard';
-		if (index > _board.length - 1) throw 'invalid index for gameBoard';
+		if (move.index > _board.length - 1) throw 'invalid index for gameBoard';
 		//return false if the updated tile is not empty
-		if (_board[index] !== _states.empty) return false;
+		if (_board[move.index] !== _states.empty) return false;
 		//assignment
-		_board[index] = player;
+		_board[move.index] = move.player;
 		return true;
 	};
 

@@ -4,8 +4,11 @@
 
 	--fs-h1: 5rem;
 
-	--bg-clr: #f0f9ff;
-	--h-bg-clr: #facc15;
+	--main-bg-clr: #007acc;
+	--header-bg-clr: #f0db4f;
+
+	--header-clr: #323330;
+	--main-clr: #ffffff;
 }
 
 * {
@@ -17,7 +20,10 @@
 body {
 	width: 100vw;
 	height: 100vh;
+
 	font-family: var(--ff);
+	background-color: var(--main-bg-clr);
+	color: var(--main-clr);
 }
 
 .scaffold {
@@ -25,13 +31,14 @@ body {
 	height: 100%;
 	display: grid;
 	grid-template-rows: 1fr 5fr auto;
-	background-color: var(--bg-clr);
 }
 
 .header {
-	background-color: var(--h-bg-clr);
-	border-bottom: 6px solid black;
 	padding: 0 5%;
+
+	color: var(--header-clr);
+	background-color: var(--header-bg-clr);
+	border-bottom: 6px solid var(--header-clr);
 }
 
 h1 {
@@ -44,11 +51,14 @@ h1 {
 	display: grid;
 	justify-content: center;
 	align-content: center;
+
+	background-color: var(--main-bg-clr);
+	color: var(--main-clr);
 }
 
 .board-container {
-	width: 600px;
-	height: 600px;
+	width: min(600px, 90vw);
+	height: min(600px, 90vw);
 	display: grid;
 }
 
@@ -56,9 +66,9 @@ h1 {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 
-	border: 2px solid black;
+	border: 2px solid var(--main-clr);
 }
 
 .tile {
-	border: 1px solid black;
+	border: 1px solid var(--main-clr);
 }

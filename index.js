@@ -5,7 +5,7 @@ const gameBoard = (function () {
 		player2: 2,
 	};
 
-	const _AI = { state: _states.player2, level: 'normal' };
+	const _AI = [{ player: _states.player2, level: 'normal' }];
 
 	const _board = Array(9).fill(_states.empty);
 
@@ -50,25 +50,30 @@ const gameBoard = (function () {
 		return _board.every(tile => tile !== _states.empty);
 	};
 
-	const _AIMove = function () {
-		let moves = _AI.level === 'normal' ? _AIMovesNormal() : _AIMovesEasy();
+	const _AIMove = function (player) {
+		const AIPlayer = _AI.find(AI => AI.player === player);
+		if (!AIPlayer) throw '_AIMove(): Player is not an AI';
+		let moves =
+			AIPlayer.level === 'normal'
+				? _AIMovesNormal(AIPlayer.player)
+				: _AIMovesEasy();
 		//remove duplicates
 		moves = moves.filter((move, index, arr) => arr.indexOf(move) === index);
 
 		return {
-			player: _AI.state,
+			player: AIPlayer.player,
 			index: moves[_random(moves.length)],
 		};
 	};
 
 	// returns an array of possible indexes for the AI move,
 	// checking the most strategic indexes first
-	const _AIMovesNormal = function () {
+	const _AIMovesNormal = function (AIPlayer) {
 		return (
-			_threeAdjacent(_AI.state) ?? //check winning move
-			_threeAdjacent(_states.player1) ?? //block player from winning
-			_twoAdjacent(_AI.state) ?? //move towards winning move
-			_twoAdjacent(_states.player1) ?? //get in the way
+			_threeAdjacent(AIPlayer) ?? //check winning move
+			_threeAdjacent(_adversary(AIPlayer)) ?? //block player from winning
+			_twoAdjacent(AIPlayer) ?? //move towards winning move
+			_twoAdjacent(_adversary(AIPlayer)) ?? //get in the way
 			_AIMovesEasy() //random move
 		);
 	};
@@ -116,6 +121,11 @@ const gameBoard = (function () {
 			if (_board[i] === _states.empty) moves.push(i);
 
 		return moves.length ? moves : null;
+	};
+
+	const _adversary = function (player) {
+		if (player === _states.player1) return _states.player2;
+		if (player === _states.player2) return _states.player1;
 	};
 
 	const _random = function (n) {

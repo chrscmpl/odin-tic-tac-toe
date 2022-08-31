@@ -1,17 +1,17 @@
 const gameBoard = (function () {
 	const _states = {
 		empty: null,
-		player1: 1,
-		player2: 2,
+		player1: false,
+		player2: true,
 	};
 
 	const _board = Array(9).fill(_states.empty);
 
-	// returns the winning player or false
+	// returns the winning player or _states.empty
 	const _checkVictory = function () {
 		if (_hasWon(_states.player1)) return _states.player1;
 		if (_hasWon(_states.player2)) return _states.player2;
-		return false;
+		return _states.empty;
 	};
 
 	// each of these number's binary representation contains three 1s
@@ -44,7 +44,7 @@ const gameBoard = (function () {
 	};
 
 	const _isFull = function () {
-		return _board.forEach(tile => tile !== _states.empty);
+		return _board.every(tile => tile !== _states.empty);
 	};
 
 	//updates the tile and returns true if it is empty
@@ -65,7 +65,7 @@ const gameBoard = (function () {
 	//returns false if it is not
 	const gameOver = function () {
 		const winner = _checkVictory();
-		if (winner)
+		if (winner !== _states.empty)
 			return {
 				outcome: 'victory',
 				winner,

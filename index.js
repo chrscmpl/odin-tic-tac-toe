@@ -79,6 +79,8 @@ const gameBoard = (function () {
 	return { update, gameOver, reset, getBoard };
 })();
 
-// const displayController = (function () {})();
+const displayController = (function (displayBoard, tileAttr) {
+	return {};
+})(document.querySelector('.board'), 'data-index');
 
 // function Player() {}

@@ -7,29 +7,40 @@ const gameBoard = (function () {
 
 	const _board = Array(9).fill(_states.empty);
 
-	//returns false for no winner or winning player
+	// returns the winning player or false
 	const _checkVictory = function () {
-		//horizontal
-		for (let i = 0; i < _board.length; i += 3)
-			if (_checkAdjacent(i, 1)) return _board[i];
-		//vertical
-		for (let i = 0; i < 3; i++) {
-			if (_checkAdjacent(i, 3)) return _board[i];
-		}
-		//diagonal
-		if (_checkAdjacent(0, 4) || _checkAdjacent(2, 2)) return _board[4];
+		if (_hasWon(_states.player1)) return _states.player1;
+		if (_hasWon(_states.player2)) return _states.player2;
 		return false;
 	};
 
-	//checks tiles in a single row / column / diagonal for victory
-	const _checkAdjacent = function (index, increment) {
-		if (
-			_board[index] !== _states.empty &&
-			_board[index] === _board[index + increment] &&
-			_board[index] === _board[index + increment * 2]
-		)
-			return _board[index];
+	// each of these number's binary representation contains three 1s
+	// in a combination that corresponds to a victory when put on the board
+	// every other bit is 0
+	const _winningNumbers = [448, 292, 273, 146, 84, 73, 56, 7];
+
+	// for each winning combination, if the number representing the player's moves
+	// has three 0es corresponding to the combination the player wins
+	// (move (bitwise) OR winning number) === move + winning number
+	const _hasWon = function (player) {
+		const move = _getMove(player);
+		for (const num of _winningNumbers)
+			if ((move | num) === move + num) return true;
 		return false;
+	};
+
+	// returns a number whose binary representation
+	// has the same length as the board,
+	// has 0es corresponding to the player's moves
+	// 1s everywhere else
+	const _getMove = function (player) {
+		// working, less performant implementation
+		// return parseInt(_board.map(tile => Number(tile !== player)).join(''), 2);
+		let move = 0;
+		for (let i = _board.length - 1; i >= 0; i--) {
+			if (_board[i] !== player) move += 1 << i;
+		}
+		return move;
 	};
 
 	const _isFull = function () {

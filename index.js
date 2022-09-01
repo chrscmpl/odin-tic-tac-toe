@@ -4,17 +4,10 @@ const AILevels = {
 	normal: Symbol('normal'),
 };
 
-const player1 = Player('Player 1');
-const player2 = Player('Player 2', AILevels.normal);
-
 const gameBoard = (function () {
-	const _players = {
-		empty: { sign: Symbol('empty') },
-		player1: player1,
-		player2: player2,
-	};
+	const _players = { empty: { sign: Symbol('empty') } };
 
-	const _board = Array(9).fill(_players.empty.sign);
+	const _board = Array(9);
 
 	// returns the winning player or _states.empty
 	const _checkVictory = function () {
@@ -160,6 +153,19 @@ const gameBoard = (function () {
 		return Math.floor(Math.random() * n);
 	};
 
+	const _isPlayer = function (player) {
+		return typeof player === 'object' && 'sign' in player && 'AI' in player;
+	};
+
+	//starts the game
+	const start = function (player1, player2) {
+		if (!_isPlayer(player1) || !_isPlayer(player2))
+			throw 'Invalid players to start the game with';
+		_players.player1 = player1;
+		_players.player2 = player2;
+		for (let i = 0; i < _board.length; i++) _board[i] = _players.empty.sign;
+	};
+
 	//updates the tile and returns true if it is empty
 	//returns false if it is not
 	const update = function (move) {
@@ -196,17 +202,12 @@ const gameBoard = (function () {
 		return false;
 	};
 
-	//sets every tile to empty
-	const reset = function () {
-		for (let i = 0; i < _board.length; i++) _board[i] = _players.empty.sign;
-	};
-
 	//returns a (read only) copy of the board
 	const getBoard = function () {
 		return [..._board];
 	};
 
-	return { update, gameOver, reset, getBoard };
+	return { start, update, gameOver, getBoard };
 })();
 
 const displayController = (function (displayBoard) {
@@ -235,3 +236,7 @@ const displayController = (function (displayBoard) {
 function Player(name, AI = AILevels.none) {
 	return { name, AI, sign: Symbol(name) };
 }
+
+const player1 = Player('Player 1');
+const player2 = Player('Player 2', AILevels.normal);
+gameBoard.start(player1, player2);

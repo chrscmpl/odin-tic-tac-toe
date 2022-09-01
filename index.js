@@ -232,22 +232,26 @@ const game = (function () {
 })();
 
 const gameBoard = (function (UIBoard) {
-	const _players = gamePlayers(
-		Player('player1', true),
-		Player('player2', false, AILevels.normal)
-	);
-	game.start(_players);
-
 	const _tiles = [...UIBoard.querySelectorAll('.tile')];
 
 	_tiles.forEach(tile =>
 		tile.addEventListener(
 			'click',
 			function () {
-				_turn(_tiles.indexOf(this));
+				if (!game.gameOver()) _turn(_tiles.indexOf(this));
 			}.bind(tile)
 		)
 	);
+	let _players;
+
+	const _start = function (players) {
+		_tiles.forEach(tile =>
+			tile.classList.remove(players.player1.name, players.player2.name)
+		);
+		UIBoard.classList.remove('victory-player1', 'victory-player2', 'draw');
+		_players = players;
+		game.start(players);
+	};
 
 	const _turn = function (index) {
 		const updatedIndex = game.update(index);
@@ -256,11 +260,11 @@ const gameBoard = (function (UIBoard) {
 			_players.passTurn();
 		}
 		const gameOver = game.gameOver();
-		if (gameOver) _gameOver(gameOver);
+		if (gameOver) _displayGameOver(gameOver);
 		else if (_players.currentPlayer().AI !== AILevels.none) _turn();
 	};
 
-	const _gameOver = function ({ outcome, winner }) {
+	const _displayGameOver = function ({ outcome, winner }) {
 		if (outcome === outcomes.victory) {
 			UIBoard.classList.add(
 				winner === _players.player1 ? 'victory-player1' : 'victory-player2'
@@ -268,5 +272,21 @@ const gameBoard = (function (UIBoard) {
 		} else UIBoard.classList.add('draw');
 	};
 
-	return {};
+	_start(
+		gamePlayers(
+			Player('player1', true),
+			Player('player2', false, AILevels.normal)
+		)
+	);
+	return { _start, _turn };
 })(document.querySelector('.board'));
+
+document.querySelector('.header').addEventListener('click', () => {
+	gameBoard._start(
+		gamePlayers(
+			Player('player1', true, AILevels.normal),
+			Player('player2', false, AILevels.normal)
+		)
+	);
+	gameBoard._turn();
+});

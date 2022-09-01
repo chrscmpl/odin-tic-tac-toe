@@ -63,11 +63,11 @@ const game = (function () {
 	// has three 0es corresponding to the combination the player wins
 	// (move (bitwise) OR winning number) === move + winning number
 	//
-	// EX: X O X
-	//		 O X O	= 0 1 0 1 0 1 1 0 0
-	// 		 O X X
+	//	EX: X O X
+	//	    O X O	= 0 1 0 1 0 1 1 0 0
+	//	    O X X
 	//
-	//			  273 = 1 0 0 0 1 0 0 0 1
+	//	    273 = 1 0 0 0 1 0 0 0 1
 	//
 	//   board				273
 	// 010101100 | 100010001 = 110111101
@@ -281,7 +281,8 @@ const gameBoard = (function (UIBoard) {
 	return { _start, _turn };
 })(document.querySelector('.board'));
 
-document.querySelector('.header').addEventListener('click', () => {
+window.addEventListener('keydown', e => {
+	if (e.key !== 'Enter' && e.key.slice(0, 5) !== 'Arrow') return;
 	gameBoard._start(
 		gamePlayers(
 			Player('player1', true, AILevels.normal),

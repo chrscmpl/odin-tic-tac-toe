@@ -178,12 +178,13 @@ const gameBoard = (function () {
 		if (move.player.AI !== AILevels.none) {
 			const AIMove = _AIMove(move.player);
 			_board[AIMove.index] = AIMove.sign;
+			return AIMove.index;
 		}
 		//return false if the updated tile is not empty
-		else if (_board[move.index] !== _players.empty.sign) return false;
+		if (_board[move.index] !== _players.empty.sign) return null;
 		//assignment for human players
-		else _board[move.index] = move.player.sign;
-		return true;
+		_board[move.index] = move.player.sign;
+		return move.index;
 	};
 
 	//returns an object if the game is over
@@ -211,32 +212,45 @@ const gameBoard = (function () {
 })();
 
 const displayController = (function (displayBoard) {
-	const _tiles = [...displayBoard.querySelectorAll('.tile')].map(
-		(node, index) => ({ node, index })
-	);
+	const player1 = Player('player1', true);
+	const player2 = Player('player2', false, AILevels.normal);
+	gameBoard.start(player1, player2);
+
+	const _tiles = [...displayBoard.querySelectorAll('.tile')];
 
 	_tiles.forEach(tile =>
-		tile.node.addEventListener(
+		tile.addEventListener(
 			'click',
 			function () {
-				_play(this);
+				_play(_tiles.indexOf(this));
 			}.bind(tile)
 		)
 	);
 
-	const _play = function (tile) {
-		if (gameBoard.update({ player: player1, index: tile.index })) {
-			tile.node.classList.add('player1');
+	const _play = function (index) {
+		const player = _getCurrentPlayer();
+		const updatedIndex = gameBoard.update({ player, index });
+		if (updatedIndex !== null) {
+			_tiles[updatedIndex].classList.add(player.name);
+			_passTurn();
 		}
+		if (gameBoard.gameOver()) displayBoard.classList.add('game-over');
+		if (_getCurrentPlayer.AI !== AILevels.none) _play();
+	};
+
+	const _passTurn = function () {
+		player1.current = !player1.current;
+		player2.current = !player2.current;
+	};
+
+	const _getCurrentPlayer = function () {
+		if (player1.current) return player1;
+		if (player2.current) return player2;
 	};
 
 	return {};
 })(document.querySelector('.board'));
 
-function Player(name, AI = AILevels.none) {
-	return { name, AI, sign: Symbol(name) };
+function Player(name, current = false, AI = AILevels.none) {
+	return { name, current: !!current, AI, sign: Symbol(name) };
 }
-
-const player1 = Player('Player 1');
-const player2 = Player('Player 2', AILevels.normal);
-gameBoard.start(player1, player2);

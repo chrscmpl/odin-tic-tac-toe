@@ -11,6 +11,8 @@
 	--main-clr: #ffffff;
 
 	--sign-scale: 200%;
+	--cross-scale: var(--sign-scale);
+	--circle-scale: calc(var(--sign-scale) - 50%);
 }
 
 * {
@@ -20,7 +22,6 @@
 }
 
 body {
-	width: 100vw;
 	height: 100vh;
 
 	font-family: var(--ff);
@@ -48,7 +49,7 @@ h1 {
 }
 
 .content {
-	width: 100%;
+	/* width: 100%; */
 	height: 100%;
 	display: grid;
 	justify-content: center;
@@ -59,8 +60,8 @@ h1 {
 }
 
 .board-container {
-	width: min(600px, 90vw);
-	height: min(600px, 90vw);
+	width: min(500px, 90vw);
+	height: min(500px, 90vw);
 	display: grid;
 }
 
@@ -68,7 +69,7 @@ h1 {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 
-	border: 2px solid var(--main-clr);
+	border: 4px solid var(--main-clr);
 }
 
 .tile {
@@ -82,7 +83,14 @@ h1 {
 .tile .circle {
 	grid-area: 1 / 1 / 1 / 1;
 	visibility: hidden;
-	transform: scale(var(--sign-scale));
+}
+
+.tile .cross {
+	transform: scale(var(--cross-scale));
+}
+
+.tile .circle {
+	transform: scale(var(--circle-scale));
 }
 
 .tile.player1 .cross {
@@ -91,4 +99,10 @@ h1 {
 
 .tile.player2 .circle {
 	visibility: visible;
+}
+
+.game-over,
+.game-over * {
+	border-color: #f0db4f;
+	stroke: #f0db4f;
 }

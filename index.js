@@ -1,19 +1,23 @@
 const gameBoard = (function () {
-	const _states = {
-		empty: null,
-		player1: 1,
-		player2: 2,
+	const _players = {
+		empty: { sign: null },
+		player1: { sign: 1, AI: _AILevels.none },
+		player2: { sign: 2, AI: _AILevels.normal },
 	};
 
-	const _AIs = [{ player: _states.player2, level: 'normal' }];
+	const _AILevels = {
+		none: false,
+		easy: 'easy',
+		normal: 'normal',
+	};
 
-	const _board = Array(9).fill(_states.empty);
+	const _board = Array(9).fill(_players.empty.sign);
 
 	// returns the winning player or _states.empty
 	const _checkVictory = function () {
-		if (_hasWon(_states.player1)) return _states.player1;
-		if (_hasWon(_states.player2)) return _states.player2;
-		return _states.empty;
+		if (_hasWon(_players.player1.sign)) return _players.player1.sign;
+		if (_hasWon(_players.player2.sign)) return _players.player2.sign;
+		return _players.empty.sign;
 	};
 
 	// each of these number's binary representation contains three 1s
@@ -24,8 +28,8 @@ const gameBoard = (function () {
 	// for each winning combination, if the number representing the player's moves
 	// has three 0es corresponding to the combination the player wins
 	// (move (bitwise) OR winning number) === move + winning number
-	const _hasWon = function (player) {
-		const moves = _getMoves(player);
+	const _hasWon = function (sign) {
+		const moves = _getMoves(sign);
 		for (let i = _winningNumbers.length - 1; i >= 0; i--)
 			if ((moves | _winningNumbers[i]) === moves + _winningNumbers[i])
 				return true;
@@ -36,57 +40,61 @@ const gameBoard = (function () {
 	// has the same length as the board,
 	// has 0es corresponding to the player's moves
 	// 1s everywhere else
-	const _getMoves = function (player) {
+	const _getMoves = function (sign) {
 		// logically equivalent, but less performant implementation
 		// return parseInt(_board.map(tile => Number(tile !== player)).join(''), 2);
 		let move = 0;
 		for (let i = _board.length - 1; i >= 0; i--) {
-			if (_board[i] !== player) move += 1 << i;
+			if (_board[i] !== sign) move += 1 << i;
 		}
 		return move;
 	};
 
 	const _isFull = function () {
-		return _board.every(tile => tile !== _states.empty);
+		return _board.every(tile => tile !== _players.empty.sign);
 	};
 
-	const _AIMove = function (AI) {
+	const _AIMove = function (player) {
 		let moves =
-			AI.level === 'normal' ? _AIMovesNormal(AI.player) : _AIMovesEasy();
+			player.AI === _AILevels.normal
+				? _AIMovesNormal(player.sign)
+				: player.AI === _AILevels.easy
+				? _AIMovesEasy()
+				: null;
 
-		if (!moves) throw `No available moves for AI: ${AI.player}, ${AI.level}`;
+		if (!moves) throw `No available moves for AI: ${player.sign}, ${player.AI}`;
 
 		// removes duplicates (on second thought I am pretty sure I don't want this)
 		// moves = moves.filter((move, index, arr) => arr.indexOf(move) === index);
 
 		return {
-			player: AI.player,
+			sign: player.sign,
 			index: moves[_random(moves.length)],
 		};
 	};
 
 	// returns an array of possible indexes for the AI move,
 	// checking the most strategic indexes first
-	const _AIMovesNormal = function (AI) {
+	const _AIMovesNormal = function (AImark) {
 		return (
-			_threeAdjacent(AI) ?? //check winning move
-			_threeAdjacent(_adversary(AI)) ?? //block player from winning
-			_twoAdjacent(AI) ?? //move towards winning move
-			_twoAdjacent(_adversary(AI)) ?? //get in the way
+			_threeAdjacent(AImark) ?? //check winning move
+			_threeAdjacent(_adversary(AImark)) ?? //block player from winning
+			_twoAdjacent(AImark) ?? //move towards winning move
+			_twoAdjacent(_adversary(AImark)) ?? //get in the way
 			_AIMovesEasy() //random move
 		);
 	};
 
 	// checks if the player can win this turn,
 	// returns array of winning indexes or false
-	const _threeAdjacent = function (player) {
+	const _threeAdjacent = function (sign) {
 		let moves = [];
 
 		for (let i = _board.length - 1; i >= 0; i--)
-			if (_board[i] === _states.empty) {
-				_board[i] = player;
-				if (_hasWon(player)) moves.push(i);
-				_board[i] = _states.empty;
+			if (_board[i] === _players.empty.sign) {
+				_board[i] = sign;
+				if (_hasWon(sign)) moves.push(i);
+				_board[i] = _players.empty.sign;
 			}
 
 		return moves.length ? moves : null;
@@ -94,22 +102,22 @@ const gameBoard = (function () {
 
 	// checks if the player can win in two moves,
 	// returns array of indexes contributing to win or false
-	const _twoAdjacent = function (player) {
+	const _twoAdjacent = function (sign) {
 		let moves = [];
 
 		for (let i = _board.length - 1; i >= 0; i--)
-			if (_board[i] === _states.empty) {
-				_board[i] = player;
+			if (_board[i] === _players.empty.sign) {
+				_board[i] = sign;
 				for (let j = i - 1; j >= 0; j--) {
-					if (_board[j] === _states.empty) {
-						_board[j] = player;
-						if (_hasWon(player)) {
+					if (_board[j] === _players.empty.sign) {
+						_board[j] = sign;
+						if (_hasWon(sign)) {
 							moves.push(i, j);
 						}
-						_board[j] = _states.empty;
+						_board[j] = _players.empty.sign;
 					}
 				}
-				_board[i] = _states.empty;
+				_board[i] = _players.empty.sign;
 			}
 
 		return moves.length ? moves : null;
@@ -120,18 +128,19 @@ const gameBoard = (function () {
 		let moves = [];
 
 		for (let i = _board.length - 1; i >= 0; i--)
-			if (_board[i] === _states.empty) moves.push(i);
+			if (_board[i] === _players.empty.sign) moves.push(i);
 
 		return moves.length ? moves : null;
 	};
 
-	const _adversary = function (player) {
-		if (player === _states.player1) return _states.player2;
-		if (player === _states.player2) return _states.player1;
+	const _adversary = function (sign) {
+		if (sign === _players.player1.sign) return _players.player2.sign;
+		if (sign === _players.player2.sign) return _players.player1.sign;
 	};
 
-	const _getAI = function (player) {
-		return _AIs.find(AI => AI.player === player);
+	const _getPlayer = function (sign) {
+		for (const player in _players)
+			if (_players[player].sign === sign) return _players[player];
 	};
 
 	const _random = function (n) {
@@ -142,18 +151,21 @@ const gameBoard = (function () {
 	//returns false if it is not
 	const update = function (move) {
 		//validity checks
-		if (move.player !== _states.player1 && move.player !== _states.player2)
+		if (
+			move.player !== _players.player1.sign &&
+			move.player !== _players.player2.sign
+		)
 			throw 'invalid player for gameBoard';
 		if (move.index >= _board.length || move.index < 0)
 			throw 'invalid index for gameBoard';
 		//call AI if function was called with a player corresponding to an AI
-		const AI = _getAI(move.player);
-		if (AI) {
-			const AIMove = _AIMove(AI);
-			_board[AIMove.index] = AIMove.player;
+		const player = _getPlayer(move.player);
+		if (player.AI) {
+			const AIMove = _AIMove(player);
+			_board[AIMove.index] = AIMove.sign;
 		}
 		//return false if the updated tile is not empty
-		else if (_board[move.index] !== _states.empty) return false;
+		else if (_board[move.index] !== _players.empty.sign) return false;
 		//assignment for human players
 		else _board[move.index] = move.player;
 		return true;
@@ -163,7 +175,7 @@ const gameBoard = (function () {
 	//returns false if it is not
 	const gameOver = function () {
 		const winner = _checkVictory();
-		if (winner !== _states.empty)
+		if (winner !== _players.empty.sign)
 			return {
 				outcome: 'victory',
 				winner,
@@ -177,7 +189,7 @@ const gameBoard = (function () {
 
 	//sets every tile to empty
 	const reset = function () {
-		for (let i = 0; i < _board.length; i++) _board[i] = _states.empty;
+		for (let i = 0; i < _board.length; i++) _board[i] = _players.empty.sign;
 	};
 
 	//returns a (read only) copy of the board

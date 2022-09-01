@@ -75,12 +75,12 @@ const gameBoard = (function () {
 
 	// returns an array of possible indexes for the AI move,
 	// checking the most strategic indexes first
-	const _AIMovesNormal = function (AImark) {
+	const _AIMovesNormal = function (AIsign) {
 		return (
-			_threeAdjacent(AImark) ?? //check winning move
-			_threeAdjacent(_adversary(AImark)) ?? //block player from winning
-			_twoAdjacent(AImark) ?? //move towards winning move
-			_twoAdjacent(_adversary(AImark)) ?? //get in the way
+			_threeAdjacent(AIsign) ?? //check winning move
+			_threeAdjacent(_adversary(AIsign)) ?? //block player from winning
+			_twoAdjacent(AIsign) ?? //move towards winning move
+			_twoAdjacent(_adversary(AIsign)) ?? //get in the way
 			_AIMovesEasy() //random move
 		);
 	};

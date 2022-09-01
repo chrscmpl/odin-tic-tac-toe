@@ -64,7 +64,7 @@ const game = (function () {
 	// (move (bitwise) OR winning number) === move + winning number
 	//
 	//	EX: X O X
-	//	    O X O	= 0 1 0 1 0 1 1 0 0
+	//	    O X O = 0 1 0 1 0 1 1 0 0
 	//	    O X X
 	//
 	//	      273 = 1 0 0 0 1 0 0 0 1

@@ -4,8 +4,46 @@ const AILevels = {
 	normal: Symbol('normal'),
 };
 
-const gameBoard = (function () {
-	const _players = { empty: { sign: Symbol('empty') } };
+const outcomes = {
+	victory: Symbol('victory'),
+	draw: Symbol('draw'),
+};
+
+function gamePlayers(player1, player2) {
+	if (
+		!(typeof player1 === 'object' && 'sign' in player1 && 'AI' in player1) ||
+		!(typeof player2 === 'object' && 'sign' in player2 && 'AI' in player2)
+	)
+		throw 'Invalid players';
+	return {
+		empty: { sign: Symbol('empty') },
+		player1,
+		player2,
+		getPlayer: function (sign) {
+			if (this.player1.sign === sign) return this.player1;
+			if (this.player2.sign === sign) return this.player2;
+		},
+		getOpponent: function (sign) {
+			if (this.getPlayer(sign) === this.player1) return this.player2;
+			if (this.getPlayer(sign) === this.player2) return this.player1;
+		},
+		currentPlayer: function () {
+			if (this.player1.current) return this.player1;
+			if (this.player2.current) return this.player2;
+		},
+		passTurn: function () {
+			this.player1.current = !this.player1.current;
+			this.player2.current = !this.player2.current;
+		},
+	};
+}
+
+function Player(name, current = false, AI = AILevels.none) {
+	return { name, current: !!current, AI, sign: Symbol(name) };
+}
+
+const game = (function () {
+	let _players;
 
 	const _board = Array(9);
 
@@ -84,9 +122,9 @@ const gameBoard = (function () {
 	const _AIMovesNormal = function (sign) {
 		return (
 			_threeAdjacent(sign) ?? //check winning move
-			_threeAdjacent(_adversary(sign)) ?? //block player from winning
+			_threeAdjacent(_players.getOpponent(sign).sign) ?? //block player from winning
 			_twoAdjacent(sign) ?? //move towards winning move
-			_twoAdjacent(_adversary(sign)) ?? //get in the way
+			_twoAdjacent(_players.getOpponent(sign).sign) ?? //get in the way
 			_AIMovesEasy() //random move
 		);
 	};
@@ -139,52 +177,34 @@ const gameBoard = (function () {
 		return moves.length ? moves : null;
 	};
 
-	const _adversary = function (sign) {
-		if (sign === _players.player1.sign) return _players.player2.sign;
-		if (sign === _players.player2.sign) return _players.player1.sign;
-	};
-
-	const _getPlayer = function (sign) {
-		for (const player in _players)
-			if (_players[player].sign === sign) return _players[player];
-	};
-
 	const _random = function (n) {
 		return Math.floor(Math.random() * n);
 	};
 
-	const _isPlayer = function (player) {
-		return typeof player === 'object' && 'sign' in player && 'AI' in player;
-	};
-
 	//starts the game
-	const start = function (player1, player2) {
-		if (!_isPlayer(player1) || !_isPlayer(player2))
-			throw 'Invalid players to start the game with';
-		_players.player1 = player1;
-		_players.player2 = player2;
+	const start = function (players) {
+		_players = players;
 		for (let i = 0; i < _board.length; i++) _board[i] = _players.empty.sign;
 	};
 
+	//calls the AI if the current player is an AI
 	//updates the tile and returns true if it is empty
 	//returns false if it is not
-	const update = function (move) {
+	const update = function (index) {
 		//validity checks
-		if (move.player !== _players.player1 && move.player !== _players.player2)
-			throw 'invalid player for gameBoard';
-		if (move.index >= _board.length || move.index < 0)
+		if (index >= _board.length || index < 0)
 			throw 'invalid index for gameBoard';
 		//call AI if function was called with a player corresponding to an AI
-		if (move.player.AI !== AILevels.none) {
-			const AIMove = _AIMove(move.player);
+		if (_players.currentPlayer().AI !== AILevels.none) {
+			const AIMove = _AIMove(_players.currentPlayer());
 			_board[AIMove.index] = AIMove.sign;
 			return AIMove.index;
 		}
 		//return false if the updated tile is not empty
-		if (_board[move.index] !== _players.empty.sign) return null;
+		if (_board[index] !== _players.empty.sign) return null;
 		//assignment for human players
-		_board[move.index] = move.player.sign;
-		return move.index;
+		_board[index] = _players.currentPlayer().sign;
+		return index;
 	};
 
 	//returns an object if the game is over
@@ -193,12 +213,12 @@ const gameBoard = (function () {
 		const winner = _checkVictory();
 		if (winner !== _players.empty.sign)
 			return {
-				outcome: 'victory',
-				winner: _getPlayer(winner),
+				outcome: outcomes.victory,
+				winner: _players.getPlayer(winner),
 			};
 		if (_isFull())
 			return {
-				outcome: 'draw',
+				outcome: outcomes.draw,
 			};
 		return false;
 	};
@@ -211,46 +231,42 @@ const gameBoard = (function () {
 	return { start, update, gameOver, getBoard };
 })();
 
-const displayController = (function (displayBoard) {
-	const player1 = Player('player1', true);
-	const player2 = Player('player2', false, AILevels.normal);
-	gameBoard.start(player1, player2);
+const gameBoard = (function (UIBoard) {
+	const _players = gamePlayers(
+		Player('player1', true),
+		Player('player2', false, AILevels.normal)
+	);
+	game.start(_players);
 
-	const _tiles = [...displayBoard.querySelectorAll('.tile')];
+	const _tiles = [...UIBoard.querySelectorAll('.tile')];
 
 	_tiles.forEach(tile =>
 		tile.addEventListener(
 			'click',
 			function () {
-				_play(_tiles.indexOf(this));
+				_turn(_tiles.indexOf(this));
 			}.bind(tile)
 		)
 	);
 
-	const _play = function (index) {
-		const player = _getCurrentPlayer();
-		const updatedIndex = gameBoard.update({ player, index });
+	const _turn = function (index) {
+		const updatedIndex = game.update(index);
 		if (updatedIndex !== null) {
-			_tiles[updatedIndex].classList.add(player.name);
-			_passTurn();
+			_tiles[updatedIndex].classList.add(_players.currentPlayer().name);
+			_players.passTurn();
 		}
-		if (gameBoard.gameOver()) displayBoard.classList.add('game-over');
-		if (_getCurrentPlayer.AI !== AILevels.none) _play();
+		const gameOver = game.gameOver();
+		if (gameOver) _gameOver(gameOver);
+		else if (_players.currentPlayer().AI !== AILevels.none) _turn();
 	};
 
-	const _passTurn = function () {
-		player1.current = !player1.current;
-		player2.current = !player2.current;
-	};
-
-	const _getCurrentPlayer = function () {
-		if (player1.current) return player1;
-		if (player2.current) return player2;
+	const _gameOver = function ({ outcome, winner }) {
+		if (outcome === outcomes.victory) {
+			UIBoard.classList.add(
+				winner === _players.player1 ? 'victory-player1' : 'victory-player2'
+			);
+		} else UIBoard.classList.add('draw');
 	};
 
 	return {};
 })(document.querySelector('.board'));
-
-function Player(name, current = false, AI = AILevels.none) {
-	return { name, current: !!current, AI, sign: Symbol(name) };
-}

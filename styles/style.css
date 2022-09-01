@@ -101,8 +101,20 @@ h1 {
 	visibility: visible;
 }
 
-.game-over,
-.game-over * {
+.victory-player1,
+.victory-player1 * {
+	border-color: green;
+	stroke: green;
+}
+
+.victory-player2,
+.victory-player2 * {
+	border-color: red;
+	stroke: red;
+}
+
+.draw,
+.draw * {
 	border-color: #f0db4f;
 	stroke: #f0db4f;
 }

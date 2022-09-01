@@ -1,11 +1,11 @@
 const _AILevels = {
 	none: false,
-	easy: 'easy',
-	normal: 'normal',
+	easy: Symbol(),
+	normal: Symbol(),
 };
 
-const player1 = { sign: 1, AI: _AILevels.none };
-const player2 = { sign: 2, AI: _AILevels.normal };
+const player1 = { sign: Symbol(), AI: _AILevels.none };
+const player2 = { sign: Symbol(), AI: _AILevels.normal };
 
 const gameBoard = (function () {
 	const _players = {

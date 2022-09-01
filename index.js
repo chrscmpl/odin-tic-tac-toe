@@ -1,15 +1,15 @@
-const _AILevels = {
-	none: false,
-	easy: Symbol(),
-	normal: Symbol(),
+const AILevels = {
+	none: Symbol('none'),
+	easy: Symbol('easy'),
+	normal: Symbol('normal'),
 };
 
-const player1 = { sign: Symbol(), AI: _AILevels.none };
-const player2 = { sign: Symbol(), AI: _AILevels.normal };
+const player1 = Player('Player 1');
+const player2 = Player('Player 2', AILevels.normal);
 
 const gameBoard = (function () {
 	const _players = {
-		empty: { sign: null },
+		empty: { sign: Symbol('empty') },
 		player1: player1,
 		player2: player2,
 	};
@@ -31,6 +31,16 @@ const gameBoard = (function () {
 	// for each winning combination, if the number representing the player's moves
 	// has three 0es corresponding to the combination the player wins
 	// (move (bitwise) OR winning number) === move + winning number
+	//
+	// EX: X O X
+	//		 O X O	= 0 1 0 1 0 1 1 0 0
+	// 		 O X X
+	//
+	//			  273 = 1 0 0 0 1 0 0 0 1
+	//
+	//   board				273
+	// 010101100 | 100010001 = 110111101
+	// 010101100 + 100010001 = 110111101
 	const _hasWon = function (sign) {
 		const moves = _getMoves(sign);
 		for (let i = _winningNumbers.length - 1; i >= 0; i--)
@@ -59,13 +69,13 @@ const gameBoard = (function () {
 
 	const _AIMove = function (player) {
 		let moves =
-			player.AI === _AILevels.normal
+			player.AI === AILevels.normal
 				? _AIMovesNormal(player.sign)
-				: player.AI === _AILevels.easy
+				: player.AI === AILevels.easy
 				? _AIMovesEasy()
 				: null;
 
-		if (!moves) throw `No available moves for AI: ${player.sign}, ${player.AI}`;
+		if (!moves) throw `No available moves for AI: ${player}`;
 
 		// removes duplicates (on second thought I am pretty sure I don't want this)
 		// moves = moves.filter((move, index, arr) => arr.indexOf(move) === index);
@@ -78,12 +88,12 @@ const gameBoard = (function () {
 
 	// returns an array of possible indexes for the AI move,
 	// checking the most strategic indexes first
-	const _AIMovesNormal = function (AIsign) {
+	const _AIMovesNormal = function (sign) {
 		return (
-			_threeAdjacent(AIsign) ?? //check winning move
-			_threeAdjacent(_adversary(AIsign)) ?? //block player from winning
-			_twoAdjacent(AIsign) ?? //move towards winning move
-			_twoAdjacent(_adversary(AIsign)) ?? //get in the way
+			_threeAdjacent(sign) ?? //check winning move
+			_threeAdjacent(_adversary(sign)) ?? //block player from winning
+			_twoAdjacent(sign) ?? //move towards winning move
+			_twoAdjacent(_adversary(sign)) ?? //get in the way
 			_AIMovesEasy() //random move
 		);
 	};
@@ -159,7 +169,7 @@ const gameBoard = (function () {
 		if (move.index >= _board.length || move.index < 0)
 			throw 'invalid index for gameBoard';
 		//call AI if function was called with a player corresponding to an AI
-		if (move.player.AI) {
+		if (move.player.AI !== AILevels.none) {
 			const AIMove = _AIMove(move.player);
 			_board[AIMove.index] = AIMove.sign;
 		}
@@ -199,8 +209,29 @@ const gameBoard = (function () {
 	return { update, gameOver, reset, getBoard };
 })();
 
-const displayController = (function (displayBoard, tileAttr) {
-	return {};
-})(document.querySelector('.board'), 'data-index');
+const displayController = (function (displayBoard) {
+	const _tiles = [...displayBoard.querySelectorAll('.tile')].map(
+		(node, index) => ({ node, index })
+	);
 
-// function Player() {}
+	_tiles.forEach(tile =>
+		tile.node.addEventListener(
+			'click',
+			function () {
+				_play(this);
+			}.bind(tile)
+		)
+	);
+
+	const _play = function (tile) {
+		if (gameBoard.update({ player: player1, index: tile.index })) {
+			tile.node.classList.add('player1');
+		}
+	};
+
+	return {};
+})(document.querySelector('.board'));
+
+function Player(name, AI = AILevels.none) {
+	return { name, AI, sign: Symbol(name) };
+}

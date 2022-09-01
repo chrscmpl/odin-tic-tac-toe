@@ -9,6 +9,8 @@
 
 	--header-clr: #323330;
 	--main-clr: #ffffff;
+
+	--sign-scale: 200%;
 }
 
 * {
@@ -71,4 +73,22 @@ h1 {
 
 .tile {
 	border: 1px solid var(--main-clr);
+	display: grid;
+	justify-items: center;
+	align-items: center;
+}
+
+.tile .cross,
+.tile .circle {
+	grid-area: 1 / 1 / 1 / 1;
+	visibility: hidden;
+	transform: scale(var(--sign-scale));
+}
+
+.tile.player1 .cross {
+	visibility: visible;
+}
+
+.tile.player2 .circle {
+	visibility: visible;
 }

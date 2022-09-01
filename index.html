@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="./styles/normalize-CSS/normalize.css" />
 		<link rel="stylesheet" href="./styles/style.css" />
-		<script src="./index.js"></script>
+		<script src="./index.js" defer></script>
 		<title>Tic Tac Toe</title>
 	</head>
 	<body>
@@ -15,15 +15,303 @@
 			<main class="content">
 				<div class="board-container">
 					<div class="board">
-						<div class="tile" data-index="1"></div>
-						<div class="tile" data-index="2"></div>
-						<div class="tile" data-index="3"></div>
-						<div class="tile" data-index="4"></div>
-						<div class="tile" data-index="5"></div>
-						<div class="tile" data-index="6"></div>
-						<div class="tile" data-index="7"></div>
-						<div class="tile" data-index="8"></div>
-						<div class="tile" data-index="9"></div>
+						<div class="tile">
+							<svg
+								class="cross"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-x"
+							>
+								<line x1="18" y1="6" x2="6" y2="18"></line>
+								<line x1="6" y1="6" x2="18" y2="18"></line>
+							</svg>
+							<svg
+								class="circle"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-circle"
+							>
+								<circle cx="12" cy="12" r="10"></circle>
+							</svg>
+						</div>
+						<div class="tile">
+							<svg
+								class="cross"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-x"
+							>
+								<line x1="18" y1="6" x2="6" y2="18"></line>
+								<line x1="6" y1="6" x2="18" y2="18"></line>
+							</svg>
+							<svg
+								class="circle"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-circle"
+							>
+								<circle cx="12" cy="12" r="10"></circle>
+							</svg>
+						</div>
+						<div class="tile">
+							<svg
+								class="cross"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-x"
+							>
+								<line x1="18" y1="6" x2="6" y2="18"></line>
+								<line x1="6" y1="6" x2="18" y2="18"></line>
+							</svg>
+							<svg
+								class="circle"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-circle"
+							>
+								<circle cx="12" cy="12" r="10"></circle>
+							</svg>
+						</div>
+						<div class="tile">
+							<svg
+								class="cross"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-x"
+							>
+								<line x1="18" y1="6" x2="6" y2="18"></line>
+								<line x1="6" y1="6" x2="18" y2="18"></line>
+							</svg>
+							<svg
+								class="circle"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-circle"
+							>
+								<circle cx="12" cy="12" r="10"></circle>
+							</svg>
+						</div>
+						<div class="tile">
+							<svg
+								class="cross"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-x"
+							>
+								<line x1="18" y1="6" x2="6" y2="18"></line>
+								<line x1="6" y1="6" x2="18" y2="18"></line>
+							</svg>
+							<svg
+								class="circle"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-circle"
+							>
+								<circle cx="12" cy="12" r="10"></circle>
+							</svg>
+						</div>
+						<div class="tile">
+							<svg
+								class="cross"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-x"
+							>
+								<line x1="18" y1="6" x2="6" y2="18"></line>
+								<line x1="6" y1="6" x2="18" y2="18"></line>
+							</svg>
+							<svg
+								class="circle"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-circle"
+							>
+								<circle cx="12" cy="12" r="10"></circle>
+							</svg>
+						</div>
+						<div class="tile">
+							<svg
+								class="cross"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-x"
+							>
+								<line x1="18" y1="6" x2="6" y2="18"></line>
+								<line x1="6" y1="6" x2="18" y2="18"></line>
+							</svg>
+							<svg
+								class="circle"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-circle"
+							>
+								<circle cx="12" cy="12" r="10"></circle>
+							</svg>
+						</div>
+						<div class="tile">
+							<svg
+								class="cross"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-x"
+							>
+								<line x1="18" y1="6" x2="6" y2="18"></line>
+								<line x1="6" y1="6" x2="18" y2="18"></line>
+							</svg>
+							<svg
+								class="circle"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-circle"
+							>
+								<circle cx="12" cy="12" r="10"></circle>
+							</svg>
+						</div>
+						<div class="tile">
+							<svg
+								class="cross"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-x"
+							>
+								<line x1="18" y1="6" x2="6" y2="18"></line>
+								<line x1="6" y1="6" x2="18" y2="18"></line>
+							</svg>
+							<svg
+								class="circle"
+								xmlns="http://www.w3.org/2000/svg"
+								width="100"
+								height="100"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#ffffff"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="feather feather-circle"
+							>
+								<circle cx="12" cy="12" r="10"></circle>
+							</svg>
+						</div>
 					</div>
 				</div>
 			</main>

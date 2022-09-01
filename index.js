@@ -5,7 +5,7 @@ const gameBoard = (function () {
 		player2: 2,
 	};
 
-	const _AI = [{ player: _states.player2, level: 'normal' }];
+	const _AIs = [{ player: _states.player2, level: 'normal' }];
 
 	const _board = Array(9).fill(_states.empty);
 
@@ -50,30 +50,29 @@ const gameBoard = (function () {
 		return _board.every(tile => tile !== _states.empty);
 	};
 
-	const _AIMove = function (player) {
-		const AIPlayer = _AI.find(AI => AI.player === player);
-		if (!AIPlayer) throw '_AIMove(): Player is not an AI';
+	const _AIMove = function (AI) {
 		let moves =
-			AIPlayer.level === 'normal'
-				? _AIMovesNormal(AIPlayer.player)
-				: _AIMovesEasy();
+			AI.level === 'normal' ? _AIMovesNormal(AI.player) : _AIMovesEasy();
+
+		if (!moves) throw `No available moves for AI: ${AI.player}, ${AI.level}`;
+
 		//remove duplicates
 		moves = moves.filter((move, index, arr) => arr.indexOf(move) === index);
 
 		return {
-			player: AIPlayer.player,
+			player: AI.player,
 			index: moves[_random(moves.length)],
 		};
 	};
 
 	// returns an array of possible indexes for the AI move,
 	// checking the most strategic indexes first
-	const _AIMovesNormal = function (AIPlayer) {
+	const _AIMovesNormal = function (AI) {
 		return (
-			_threeAdjacent(AIPlayer) ?? //check winning move
-			_threeAdjacent(_adversary(AIPlayer)) ?? //block player from winning
-			_twoAdjacent(AIPlayer) ?? //move towards winning move
-			_twoAdjacent(_adversary(AIPlayer)) ?? //get in the way
+			_threeAdjacent(AI) ?? //check winning move
+			_threeAdjacent(_adversary(AI)) ?? //block player from winning
+			_twoAdjacent(AI) ?? //move towards winning move
+			_twoAdjacent(_adversary(AI)) ?? //get in the way
 			_AIMovesEasy() //random move
 		);
 	};
@@ -128,6 +127,10 @@ const gameBoard = (function () {
 		if (player === _states.player2) return _states.player1;
 	};
 
+	const _getAI = function (player) {
+		return _AIs.find(AI => AI.player === player);
+	};
+
 	const _random = function (n) {
 		return Math.floor(Math.random() * n);
 	};
@@ -138,11 +141,18 @@ const gameBoard = (function () {
 		//validity checks
 		if (move.player !== _states.player1 && move.player !== _states.player2)
 			throw 'invalid player for gameBoard';
-		if (move.index > _board.length - 1) throw 'invalid index for gameBoard';
+		if (move.index >= _board.length || move.index < 0)
+			throw 'invalid index for gameBoard';
+		//call AI if function was called with a player corresponding to an AI
+		const AI = _getAI(move.player);
+		if (AI) {
+			const AIMove = _AIMove(AI);
+			_board[AIMove.index] = AIMove.player;
+		}
 		//return false if the updated tile is not empty
-		if (_board[move.index] !== _states.empty) return false;
-		//assignment
-		_board[move.index] = move.player;
+		else if (_board[move.index] !== _states.empty) return false;
+		//assignment for human players
+		else _board[move.index] = move.player;
 		return true;
 	};
 
@@ -172,7 +182,7 @@ const gameBoard = (function () {
 		return [..._board];
 	};
 
-	return { update, gameOver, reset, getBoard, _AIMove };
+	return { update, gameOver, reset, getBoard };
 })();
 
 const displayController = (function (displayBoard, tileAttr) {

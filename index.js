@@ -4,11 +4,14 @@ const _AILevels = {
 	normal: 'normal',
 };
 
+const player1 = { sign: 1, AI: _AILevels.none };
+const player2 = { sign: 2, AI: _AILevels.normal };
+
 const gameBoard = (function () {
 	const _players = {
 		empty: { sign: null },
-		player1: { sign: 1, AI: _AILevels.none },
-		player2: { sign: 2, AI: _AILevels.normal },
+		player1: player1,
+		player2: player2,
 	};
 
 	const _board = Array(9).fill(_players.empty.sign);
@@ -151,23 +154,19 @@ const gameBoard = (function () {
 	//returns false if it is not
 	const update = function (move) {
 		//validity checks
-		if (
-			move.player !== _players.player1.sign &&
-			move.player !== _players.player2.sign
-		)
+		if (move.player !== _players.player1 && move.player !== _players.player2)
 			throw 'invalid player for gameBoard';
 		if (move.index >= _board.length || move.index < 0)
 			throw 'invalid index for gameBoard';
 		//call AI if function was called with a player corresponding to an AI
-		const player = _getPlayer(move.player);
-		if (player.AI) {
-			const AIMove = _AIMove(player);
+		if (move.player.AI) {
+			const AIMove = _AIMove(move.player);
 			_board[AIMove.index] = AIMove.sign;
 		}
 		//return false if the updated tile is not empty
 		else if (_board[move.index] !== _players.empty.sign) return false;
 		//assignment for human players
-		else _board[move.index] = move.player;
+		else _board[move.index] = move.player.sign;
 		return true;
 	};
 
@@ -178,7 +177,7 @@ const gameBoard = (function () {
 		if (winner !== _players.empty.sign)
 			return {
 				outcome: 'victory',
-				winner,
+				winner: _getPlayer(winner),
 			};
 		if (_isFull())
 			return {

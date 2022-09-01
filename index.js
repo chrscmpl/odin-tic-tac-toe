@@ -56,8 +56,8 @@ const gameBoard = (function () {
 
 		if (!moves) throw `No available moves for AI: ${AI.player}, ${AI.level}`;
 
-		//remove duplicates
-		moves = moves.filter((move, index, arr) => arr.indexOf(move) === index);
+		// removes duplicates (on second thought I am pretty sure I don't want this)
+		// moves = moves.filter((move, index, arr) => arr.indexOf(move) === index);
 
 		return {
 			player: AI.player,
@@ -81,6 +81,7 @@ const gameBoard = (function () {
 	// returns array of winning indexes or false
 	const _threeAdjacent = function (player) {
 		let moves = [];
+
 		for (let i = _board.length - 1; i >= 0; i--)
 			if (_board[i] === _states.empty) {
 				_board[i] = player;
@@ -95,6 +96,7 @@ const gameBoard = (function () {
 	// returns array of indexes contributing to win or false
 	const _twoAdjacent = function (player) {
 		let moves = [];
+
 		for (let i = _board.length - 1; i >= 0; i--)
 			if (_board[i] === _states.empty) {
 				_board[i] = player;
@@ -116,6 +118,7 @@ const gameBoard = (function () {
 	//returns the index of every empty tile
 	const _AIMovesEasy = function () {
 		let moves = [];
+
 		for (let i = _board.length - 1; i >= 0; i--)
 			if (_board[i] === _states.empty) moves.push(i);
 

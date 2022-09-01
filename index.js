@@ -1,14 +1,14 @@
+const _AILevels = {
+	none: false,
+	easy: 'easy',
+	normal: 'normal',
+};
+
 const gameBoard = (function () {
 	const _players = {
 		empty: { sign: null },
 		player1: { sign: 1, AI: _AILevels.none },
 		player2: { sign: 2, AI: _AILevels.normal },
-	};
-
-	const _AILevels = {
-		none: false,
-		easy: 'easy',
-		normal: 'normal',
 	};
 
 	const _board = Array(9).fill(_players.empty.sign);

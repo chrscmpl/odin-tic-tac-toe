@@ -243,20 +243,6 @@ const gameBoard = (function () {
 	const _board = document.querySelector('.board');
 	const _tiles = [..._board.querySelectorAll('.tile')];
 	const _startButton = document.getElementById('start-button');
-	const _inputs = {
-		player1: {
-			name: document.getElementById('name-player-1'),
-			human: document.getElementById('human-button-1'),
-			easy: document.getElementById('easy-button-1'),
-			hard: document.getElementById('hard-button-1'),
-		},
-		player2: {
-			name: document.getElementById('name-player-2'),
-			human: document.getElementById('human-button-2'),
-			easy: document.getElementById('easy-button-2'),
-			hard: document.getElementById('hard-button-2'),
-		},
-	};
 	let _started = false;
 	let _players;
 

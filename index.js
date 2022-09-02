@@ -243,6 +243,7 @@ const gameBoard = (function () {
 	const _board = document.querySelector('.board');
 	const _tiles = [..._board.querySelectorAll('.tile')];
 	const _startButton = document.getElementById('start-button');
+	const _victoryPopup = document.querySelector('.victory-popup');
 	let _started = false;
 	let _players;
 
@@ -298,8 +299,10 @@ const gameBoard = (function () {
 	};
 
 	const _getPlayers = function () {
-		const player1Name = document.getElementById('name-player-1').value;
-		const player2Name = document.getElementById('name-player-2').value;
+		const player1Name =
+			document.getElementById('name-player-1').value || 'PLAYER 1';
+		const player2Name =
+			document.getElementById('name-player-2').value || 'PLAYER 2';
 		const player1AI = document.querySelector('input[name="AI1"]:checked').value;
 		const player2AI = document.querySelector('input[name="AI2"]:checked').value;
 		return gamePlayers(
@@ -309,17 +312,22 @@ const gameBoard = (function () {
 	};
 
 	const _displayGameOver = function ({ outcome, winner }) {
-		if (outcome === outcomes.victory) {
-			_board.classList.add('game-over');
-		} else _board.classList.add('draw');
-		console.log(winner.name);
+		const message = document.createElement('span');
+		message.classList.add('game-over-message');
+		if (outcome === outcomes.draw) message.textContent = 'DRAW';
+		else if (outcome === outcomes.victory)
+			message.textContent = `${winner.name.toUpperCase()} WINS`;
+		_victoryPopup.appendChild(message);
+		_victoryPopup.classList.add('show');
 	};
 
 	const _removeEffects = function () {
 		_tiles.forEach(tile =>
 			tile.classList.remove('cross-shown', 'circle-shown')
 		);
-		_board.classList.remove('game-over');
+
+		_victoryPopup.classList.remove('show');
+		for (const child of _victoryPopup.children) child.remove();
 	};
 
 	return {};

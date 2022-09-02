@@ -3,6 +3,8 @@
 		Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 
 	--fs-h1: 5rem;
+	--fs-h2: 4rem;
+	--fs-h3: 3rem;
 	--fs-h4: 2rem;
 
 	--fw-n: 500;
@@ -21,6 +23,7 @@
 	--player-image-scale: 700%;
 
 	--br: 10px;
+	--shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
 }
 
 * {
@@ -62,10 +65,10 @@ h1 {
 .content {
 	height: 100%;
 	display: grid;
-	grid-template: 1fr auto / 1fr 1fr 1fr;
-	grid-template-areas:
-		'player-input-1 board player-input-2'
-		'player-input-1 start-button player-input-2';
+	grid-template:
+		'player-input-1 board player-input-2' 1fr
+		'player-input-1 start-button player-input-2' auto
+		/ 1fr 1fr 1fr;
 	align-items: center;
 	justify-items: center;
 	padding: 10px;
@@ -79,13 +82,50 @@ h1 {
 	width: min(500px, 90vw);
 	height: min(500px, 90vw);
 	display: grid;
+
+	border-radius: var(--br);
 }
 
-.board {
+.board-container > .board,
+.board-container > .victory-popup {
+	grid-area: 1 / 1 / 1 / 1;
+}
+
+.board-container > .victory-popup {
+	opacity: 0;
+}
+
+.board-container > .victory-popup.show {
+	display: grid;
+	justify-items: center;
+	align-items: center;
+
+	z-index: 2;
+	animation: appear 2s ease;
+	opacity: 1;
+}
+
+.victory-popup > .game-over-message {
+	font-size: var(--fs-h3);
+	color: var(--highlighted-text-clr);
+}
+
+@keyframes appear {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.board-container > .board {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
+	z-index: 1;
 
 	border: 4px solid var(--main-clr);
+	border-radius: var(--br);
 }
 
 .tile {
@@ -99,6 +139,7 @@ h1 {
 .tile .circle {
 	grid-area: 1 / 1 / 1 / 1;
 	visibility: hidden;
+	stroke: var(--main-clr);
 }
 
 .tile .cross {
@@ -156,6 +197,11 @@ h1 {
 	font-weight: var(--fw-b);
 }
 
+.name-input input::placeholder {
+	color: var(--main-clr);
+	opacity: 0.8;
+}
+
 .player-image-frame {
 	grid-area: image;
 	width: 100%;
@@ -171,6 +217,7 @@ h1 {
 
 .player-image-frame > svg {
 	display: none;
+	color: var(--main-clr);
 	stroke: var(--alt-clr);
 	transform: scale(var(--player-image-scale));
 }
@@ -238,19 +285,21 @@ h1 {
 	border-radius: var(--br);
 }
 
-.game-over,
-.game-over * {
-	border-color: #f0db4f;
-	stroke: #f0db4f;
+.glass {
+	border-radius: var(--br);
+	backdrop-filter: blur(20px);
+	background-color: rgba(255, 255, 255, 0.5);
+	box-shadow: var(--shadow);
+	border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 @media (max-width: 900px) {
 	.content {
-		grid-template: auto 1fr / 1fr 1fr 1fr;
-		grid-template-areas:
-			'player-input-1 start-button player-input-2'
-			'board board board';
-		padding: 20px;
-		gap: 20px;
+		grid-template:
+			'player-input-1  player-input-2' auto
+			'board board ' 1fr
+			'start-button start-button' auto
+			/ 1fr 1fr;
+		gap: 50px;
 	}
 }

@@ -243,24 +243,33 @@ const gameBoard = (function () {
 	const _board = document.querySelector('.board');
 	const _tiles = [..._board.querySelectorAll('.tile')];
 	const _startButton = document.getElementById('start-button');
+	const _inputs = {
+		player1: {
+			name: document.getElementById('name-player-1'),
+			human: document.getElementById('human-button-1'),
+			easy: document.getElementById('easy-button-1'),
+			hard: document.getElementById('hard-button-1'),
+		},
+		player2: {
+			name: document.getElementById('name-player-2'),
+			human: document.getElementById('human-button-2'),
+			easy: document.getElementById('easy-button-2'),
+			hard: document.getElementById('hard-button-2'),
+		},
+	};
 	let _started = false;
 	let _players;
 
 	// the start button starts the game and adds the event listeners
 	// to the tiles the first time it is pressed
 	_startButton.addEventListener('click', () => {
-		_start(
-			gamePlayers(
-				Player('player1', true),
-				Player('player2', false, AILevels.normal)
-			)
-		);
+		_start(_getPlayers());
 		if (!_started) {
 			_tiles.forEach(tile =>
 				tile.addEventListener(
 					'click',
 					function () {
-						if (!game.gameOver()) _turn(_tiles.indexOf(this));
+						_turn(_tiles.indexOf(this));
 					}.bind(tile)
 				)
 			);
@@ -277,8 +286,13 @@ const gameBoard = (function () {
 	};
 
 	const _turn = function (index) {
-		//if the function is called with no index and the player isn't an AI return
-		if (!_players.currentPlayer().isAI() && index === undefined) return;
+		//if the function is called with no index and the player isn't an AI
+		//or the game is over
+		if (
+			(!_players.currentPlayer().isAI() && index === undefined) ||
+			game.gameOver()
+		)
+			return;
 
 		const updatedIndex = game.update(index);
 		//if the move was valid
@@ -297,10 +311,22 @@ const gameBoard = (function () {
 		_turn(); //calls again itself automatically in case the next player is an AI
 	};
 
+	const _getPlayers = function () {
+		const player1Name = document.getElementById('name-player-1').value;
+		const player2Name = document.getElementById('name-player-2').value;
+		const player1AI = document.querySelector('input[name="AI1"]:checked').value;
+		const player2AI = document.querySelector('input[name="AI2"]:checked').value;
+		return gamePlayers(
+			Player(player1Name, true, AILevels[player1AI]),
+			Player(player2Name, false, AILevels[player2AI])
+		);
+	};
+
 	const _displayGameOver = function ({ outcome, winner }) {
 		if (outcome === outcomes.victory) {
 			_board.classList.add('game-over');
 		} else _board.classList.add('draw');
+		console.log(winner.name);
 	};
 
 	const _removeEffects = function () {

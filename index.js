@@ -246,23 +246,26 @@ const gameBoard = (function () {
 	let _started = false;
 	let _players;
 
-	_tiles.forEach(tile =>
-		tile.addEventListener(
-			'click',
-			function () {
-				if (_started && !game.gameOver()) _turn(_tiles.indexOf(this));
-			}.bind(tile)
-		)
-	);
-
+	// the start button starts the game and adds the event listeners
+	// to the tiles the first time it is pressed
 	_startButton.addEventListener('click', () => {
-		_started = true;
 		_start(
 			gamePlayers(
 				Player('player1', true),
 				Player('player2', false, AILevels.normal)
 			)
 		);
+		if (!_started) {
+			_tiles.forEach(tile =>
+				tile.addEventListener(
+					'click',
+					function () {
+						if (!game.gameOver()) _turn(_tiles.indexOf(this));
+					}.bind(tile)
+				)
+			);
+			_started = true;
+		}
 	});
 
 	//remove visual effects from last match and initialize the game
@@ -296,9 +299,7 @@ const gameBoard = (function () {
 
 	const _displayGameOver = function ({ outcome, winner }) {
 		if (outcome === outcomes.victory) {
-			_board.classList.add(
-				winner === _players.player1 ? 'victory-player1' : 'victory-player2'
-			);
+			_board.classList.add('game-over');
 		} else _board.classList.add('draw');
 	};
 
@@ -306,19 +307,21 @@ const gameBoard = (function () {
 		_tiles.forEach(tile =>
 			tile.classList.remove('cross-shown', 'circle-shown')
 		);
-		_board.classList.remove('victory-player1', 'victory-player2', 'draw');
+		_board.classList.remove('game-over');
 	};
 
-	return { _start, _turn };
+	return {};
 })();
 
-window.addEventListener('keydown', e => {
-	if (e.key !== 'Enter' && e.key.slice(0, 5) !== 'Arrow') return;
-	gameBoard._start(
-		gamePlayers(
-			Player('player1', true, AILevels.normal),
-			Player('player2', false, AILevels.normal)
-		)
-	);
-	gameBoard._turn();
-});
+// gameLoop();
+// function gameLoop() {
+// 	gameBoard._start(
+// 		gamePlayers(
+// 			Player('player1', true, AILevels.normal),
+// 			Player('player2', false, AILevels.normal)
+// 		)
+// 	);
+// 	setTimeout(() => {
+// 		gameLoop();
+// 	}, 1000);
+// }

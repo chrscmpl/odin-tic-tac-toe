@@ -5,16 +5,22 @@
 	--fs-h1: 5rem;
 	--fs-h4: 2rem;
 
-	--main-bg-clr: #007acc;
-	--header-bg-clr: #f0db4f;
-	--img-frame-clr: #334155;
+	--fw-n: 500;
+	--fw-b: 600;
+	--fw-bolder: 900;
 
-	--header-clr: #323330;
+	--bg-clr: #007acc;
 	--main-clr: #ffffff;
+	--highlight-clr: #f0db4f;
+	--highlighted-text-clr: #323330;
+	--alt-clr: #334155;
 
 	--sign-scale: 200%;
 	--cross-scale: var(--sign-scale);
 	--circle-scale: calc(var(--sign-scale) - 50%);
+	--player-image-scale: 700%;
+
+	--br: 10px;
 }
 
 * {
@@ -28,41 +34,43 @@ body {
 	height: 100vh;
 
 	font-family: var(--ff);
-	background-color: var(--main-bg-clr);
+	background-color: var(--bg-clr);
 	color: var(--main-clr);
+	font-weight: var(--fw-n);
 }
 
 .scaffold {
 	width: 100%;
 	height: 100%;
 	display: grid;
-	grid-template-rows: 1fr 5fr auto;
+	grid-template-rows: auto 1fr auto;
 }
 
 .header {
 	padding: 0 5%;
 
-	color: var(--header-clr);
-	background-color: var(--header-bg-clr);
-	border-bottom: 6px solid var(--header-clr);
+	color: var(--highlighted-text-clr);
+	background-color: var(--highlight-clr);
+	border-bottom: 6px solid var(--highlighted-text-clr);
 }
 
 h1 {
 	font-size: var(--fs-h1);
+	margin: 0;
 }
 
 .content {
 	height: 100%;
 	display: grid;
-	grid-template: auto 1fr / 1fr 1fr 1fr;
+	grid-template: 1fr auto / 1fr 1fr 1fr;
 	grid-template-areas:
-		'player-input-1 start-button player-input-2'
-		'player-input-1 board player-input-2';
+		'player-input-1 board player-input-2'
+		'player-input-1 start-button player-input-2';
 	align-items: center;
 	justify-items: center;
 	padding: 10px;
 
-	background-color: var(--main-bg-clr);
+	background-color: var(--bg-clr);
 	color: var(--main-clr);
 }
 
@@ -122,6 +130,15 @@ h1 {
 	gap: 10px;
 	justify-items: center;
 	width: min(200px, 40vw);
+	grid-template: auto auto auto / 1fr 1fr 1fr;
+	grid-template-areas:
+		'name name name'
+		'image image image'
+		'human easy hard';
+}
+
+.name-input {
+	grid-area: name;
 }
 
 .name-input label {
@@ -136,56 +153,103 @@ h1 {
 	text-align: center;
 	color: var(--main-clr);
 	font-size: var(--fs-h4);
+	font-weight: var(--fw-b);
 }
 
 .player-image-frame {
+	grid-area: image;
 	width: 100%;
 	height: min(200px, 40vw);
-	background: var(--img-frame-clr);
+	display: grid;
+	justify-items: center;
+	align-items: center;
+
+	background: var(--alt-clr);
+	border-radius: var(--br);
+	border: 3px solid var(--main-clr);
 }
 
-.AI-input input {
+.player-image-frame > svg {
+	display: none;
+	stroke: var(--alt-clr);
+	transform: scale(var(--player-image-scale));
+}
+
+.human-button:checked ~ .player-image-frame .image-human {
+	display: block;
+}
+
+.easy-button:checked ~ .player-image-frame .image-AI-easy {
+	display: block;
+}
+
+.hard-button:checked ~ .player-image-frame .image-AI-hard {
+	display: block;
+}
+
+.player-input input[type='radio'] {
 	display: none;
 }
 
-.AI-input input[type='radio']:checked + label {
-	color: #f0db4f;
+.player-input input[type='radio'] + label {
+	background-color: var(--alt-clr);
+	border-radius: var(--br);
+	padding: 10px;
+	border: 3px solid var(--main-clr);
+	width: 100%;
+	overflow: hidden;
+}
+
+.player-input input.human-button[type='radio'] + label {
+	padding-left: 0px;
+}
+
+.player-input input[type='radio']:checked + label {
+	color: var(--highlight-clr);
+	border-color: var(--highlight-clr);
+}
+
+.human-button,
+.human-button + label {
+	grid-area: human;
+}
+
+.easy-button,
+.easy-button + label {
+	grid-area: easy;
+}
+
+.hard-button,
+.hard-button + label {
+	grid-area: hard;
 }
 
 #start-button {
 	grid-area: start-button;
 	width: 100%;
+	height: 100px;
 
-	background-color: var(--header-bg-clr);
-	color: var(--header-clr);
-	border-color: var(--header-clr);
+	background-color: var(--highlight-clr);
+	color: var(--highlighted-text-clr);
+	border-color: var(--highlighted-text-clr);
+	font-weight: var(--fw-bolder);
+	font-size: var(--fs-h1);
+	font-family: var(--ff);
+	border-radius: var(--br);
 }
 
-.victory-player1,
-.victory-player1 * {
-	border-color: green;
-	stroke: green;
-}
-
-.victory-player2,
-.victory-player2 * {
-	border-color: red;
-	stroke: red;
-}
-
-.draw,
-.draw * {
+.game-over,
+.game-over * {
 	border-color: #f0db4f;
 	stroke: #f0db4f;
 }
 
 @media (max-width: 900px) {
 	.content {
-		grid-template: auto auto 1fr / 1fr 1fr;
+		grid-template: auto 1fr / 1fr 1fr 1fr;
 		grid-template-areas:
-			'player-input-1 player-input-2'
-			'start-button start-button'
-			'board board';
+			'player-input-1 start-button player-input-2'
+			'board board board';
 		padding: 20px;
 		gap: 20px;
 	}

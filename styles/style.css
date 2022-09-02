@@ -1,6 +1,12 @@
+@font-face {
+	font-family: 'Chau Philomene One';
+	src: url(../resources/Chau_Philomene_One/ChauPhilomeneOne-Regular.ttf);
+}
+
 :root {
-	--ff: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-		Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	--ff: 'Chau Philomene One', system-ui, -apple-system, BlinkMacSystemFont,
+		'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+		sans-serif;
 
 	--fs-h1: 5rem;
 	--fs-h2: 4rem;
@@ -11,11 +17,11 @@
 	--fw-b: 600;
 	--fw-bolder: 900;
 
-	--bg-clr: #007acc;
-	--main-clr: #ffffff;
-	--highlight-clr: #f0db4f;
-	--highlighted-text-clr: #323330;
-	--alt-clr: #334155;
+	--bg-clr: #e0f2fe;
+	--main-clr: #1c1917;
+	--highlight-clr: #e11d48;
+	--highlighted-text-clr: #ffe4e6;
+	--alt-clr: #fb7185;
 
 	--sign-scale: 200%;
 	--cross-scale: var(--sign-scale);
@@ -107,7 +113,7 @@ h1 {
 
 .victory-popup > .game-over-message {
 	font-size: var(--fs-h3);
-	color: var(--highlighted-text-clr);
+	color: var(--main-clr);
 }
 
 @keyframes appear {
@@ -248,11 +254,12 @@ h1 {
 }
 
 .player-input input.human-button[type='radio'] + label {
-	padding-left: 0px;
+	padding-left: 3px;
 }
 
 .player-input input[type='radio']:checked + label {
-	color: var(--highlight-clr);
+	background-color: var(--highlight-clr);
+	color: var(--highlighted-text-clr);
 	border-color: var(--highlight-clr);
 }
 

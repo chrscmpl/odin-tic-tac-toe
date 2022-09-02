@@ -19,7 +19,7 @@
 
 	--sign-scale: 200%;
 	--cross-scale: var(--sign-scale);
-	--circle-scale: calc(var(--sign-scale) - 50%);
+	--circle-scale: calc(var(--cross-scale) - 50%);
 	--player-image-scale: 700%;
 
 	--br: 10px;
@@ -170,12 +170,12 @@ h1 {
 	display: grid;
 	gap: 10px;
 	justify-items: center;
-	width: min(200px, 40vw);
-	grid-template: auto auto auto / 1fr 1fr 1fr;
-	grid-template-areas:
-		'name name name'
-		'image image image'
-		'human easy hard';
+	width: min(200px, 35vw);
+	grid-template:
+		'name name name' auto
+		'image image image' auto
+		'human easy hard' auto
+		/ 1fr 1fr 1fr;
 }
 
 .name-input {
@@ -301,5 +301,67 @@ h1 {
 			'start-button start-button' auto
 			/ 1fr 1fr;
 		gap: 50px;
+	}
+}
+
+@media (max-width: 500px) {
+	:root {
+		--fs-h1: 3rem;
+		--fs-h2: 2.8rem;
+		--fs-h3: 2.3rem;
+		--fs-h4: 1.8rem;
+		--cross-scale: 150%;
+	}
+
+	.header h1 {
+		text-align: center;
+	}
+
+	.player-input {
+		grid-template:
+			'name' auto
+			'image' auto
+			'human' auto
+			'easy' auto
+			'hard' auto;
+	}
+
+	.player-input input[type='radio'] + label {
+		text-align: center;
+	}
+
+	.player-input input.human-button[type='radio'] + label {
+		padding-left: 10px;
+	}
+}
+
+@media (max-width: 450px) {
+	:root {
+		--player-image-scale: 600%;
+	}
+}
+
+@media (max-width: 400px) {
+	:root {
+		--cross-scale: 130%;
+		--player-image-scale: 500%;
+	}
+}
+
+@media (max-width: 350px) {
+	:root {
+		--player-image-scale: 450%;
+	}
+}
+
+@media (min-width: 2000px) {
+	.content {
+		column-gap: 100px;
+	}
+	.player-input#player-input-1 {
+		justify-self: end;
+	}
+	.player-input#player-input-2 {
+		justify-self: start;
 	}
 }

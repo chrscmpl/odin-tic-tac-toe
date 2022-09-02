@@ -69,7 +69,7 @@ const game = (function () {
 	//
 	//	      273 = 1 0 0 0 1 0 0 0 1
 	//
-	//   board				273
+	//   board        273
 	// 010101100 | 100010001 = 110111101
 	// 010101100 + 100010001 = 110111101
 	const _hasWon = function (sign) {
@@ -291,3 +291,5 @@ window.addEventListener('keydown', e => {
 	);
 	gameBoard._turn();
 });
+
+// .player-input>(.name-input>label[for=name-player1]{Name}+input#name-player1[type=text value="PLAYER 1"])+.player-image-frame+(section.cpu-input>(label[for=human]{Human}+input#human[type=radio name=human value=human checked])+(label[for=easy]{Easy}+input#easy[type=radio name=easy value=easy])+(label[for=hard]{Hard}+input#hard[type=radio name=hard value=hard]))

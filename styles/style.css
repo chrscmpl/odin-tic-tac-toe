@@ -54,10 +54,13 @@ h1 {
 .content {
 	height: 100%;
 	display: grid;
-	grid-template: 1fr / 1fr 1fr 1fr;
-	grid-template-areas: 'player-input-1 board player-input-2';
+	grid-template: auto 1fr / 1fr 1fr 1fr;
+	grid-template-areas:
+		'player-input-1 start-button player-input-2'
+		'player-input-1 board player-input-2';
 	align-items: center;
 	justify-items: center;
+	padding: 10px;
 
 	background-color: var(--main-bg-clr);
 	color: var(--main-clr);
@@ -98,11 +101,11 @@ h1 {
 	transform: scale(var(--circle-scale));
 }
 
-.tile.player1 .cross {
+.tile.cross-shown .cross {
 	visibility: visible;
 }
 
-.tile.player2 .circle {
+.tile.circle-shown .circle {
 	visibility: visible;
 }
 
@@ -149,6 +152,15 @@ h1 {
 	color: #f0db4f;
 }
 
+#start-button {
+	grid-area: start-button;
+	width: 100%;
+
+	background-color: var(--header-bg-clr);
+	color: var(--header-clr);
+	border-color: var(--header-clr);
+}
+
 .victory-player1,
 .victory-player1 * {
 	border-color: green;
@@ -169,9 +181,10 @@ h1 {
 
 @media (max-width: 900px) {
 	.content {
-		grid-template: auto 1fr / 1fr 1fr;
+		grid-template: auto auto 1fr / 1fr 1fr;
 		grid-template-areas:
 			'player-input-1 player-input-2'
+			'start-button start-button'
 			'board board';
 		padding: 20px;
 		gap: 20px;

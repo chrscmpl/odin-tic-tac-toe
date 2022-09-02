@@ -39,7 +39,15 @@ function gamePlayers(player1, player2) {
 }
 
 function Player(name, current = false, AI = AILevels.none) {
-	return { name, current: !!current, AI, sign: Symbol(name) };
+	return {
+		name,
+		current: !!current,
+		AI,
+		sign: Symbol(name),
+		isAI: function () {
+			return this.AI !== AILevels.none;
+		},
+	};
 }
 
 const game = (function () {
@@ -231,55 +239,78 @@ const game = (function () {
 	return { start, update, gameOver, getBoard };
 })();
 
-const gameBoard = (function (UIBoard) {
-	const _tiles = [...UIBoard.querySelectorAll('.tile')];
+const gameBoard = (function () {
+	const _board = document.querySelector('.board');
+	const _tiles = [..._board.querySelectorAll('.tile')];
+	const _startButton = document.getElementById('start-button');
+	let _started = false;
+	let _players;
 
 	_tiles.forEach(tile =>
 		tile.addEventListener(
 			'click',
 			function () {
-				if (!game.gameOver()) _turn(_tiles.indexOf(this));
+				if (_started && !game.gameOver()) _turn(_tiles.indexOf(this));
 			}.bind(tile)
 		)
 	);
-	let _players;
 
-	const _start = function (players) {
-		_tiles.forEach(tile =>
-			tile.classList.remove(players.player1.name, players.player2.name)
+	_startButton.addEventListener('click', () => {
+		_started = true;
+		_start(
+			gamePlayers(
+				Player('player1', true),
+				Player('player2', false, AILevels.normal)
+			)
 		);
-		UIBoard.classList.remove('victory-player1', 'victory-player2', 'draw');
+	});
+
+	//remove visual effects from last match and initialize the game
+	const _start = function (players) {
+		_removeEffects();
 		_players = players;
 		game.start(players);
+		_turn(); //in case the first player is an AI
 	};
 
 	const _turn = function (index) {
+		//if the function is called with no index and the player isn't an AI return
+		if (!_players.currentPlayer().isAI() && index === undefined) return;
+
 		const updatedIndex = game.update(index);
+		//if the move was valid
 		if (updatedIndex !== null) {
-			_tiles[updatedIndex].classList.add(_players.currentPlayer().name);
+			// add cross or circle to tile
+			_tiles[updatedIndex].classList.add(
+				_players.currentPlayer() === _players.player1
+					? 'cross-shown'
+					: 'circle-shown'
+			);
 			_players.passTurn();
 		}
 		const gameOver = game.gameOver();
 		if (gameOver) _displayGameOver(gameOver);
-		else if (_players.currentPlayer().AI !== AILevels.none) _turn();
+
+		_turn(); //calls again itself automatically in case the next player is an AI
 	};
 
 	const _displayGameOver = function ({ outcome, winner }) {
 		if (outcome === outcomes.victory) {
-			UIBoard.classList.add(
+			_board.classList.add(
 				winner === _players.player1 ? 'victory-player1' : 'victory-player2'
 			);
-		} else UIBoard.classList.add('draw');
+		} else _board.classList.add('draw');
 	};
 
-	_start(
-		gamePlayers(
-			Player('player1', true),
-			Player('player2', false, AILevels.normal)
-		)
-	);
+	const _removeEffects = function () {
+		_tiles.forEach(tile =>
+			tile.classList.remove('cross-shown', 'circle-shown')
+		);
+		_board.classList.remove('victory-player1', 'victory-player2', 'draw');
+	};
+
 	return { _start, _turn };
-})(document.querySelector('.board'));
+})();
 
 window.addEventListener('keydown', e => {
 	if (e.key !== 'Enter' && e.key.slice(0, 5) !== 'Arrow') return;
@@ -291,5 +322,3 @@ window.addEventListener('keydown', e => {
 	);
 	gameBoard._turn();
 });
-
-// .player-input>(.name-input>label[for=name-player1]{Name}+input#name-player1[type=text value="PLAYER 1"])+.player-image-frame+(section.cpu-input>(label[for=human]{Human}+input#human[type=radio name=human value=human checked])+(label[for=easy]{Easy}+input#easy[type=radio name=easy value=easy])+(label[for=hard]{Hard}+input#hard[type=radio name=hard value=hard]))

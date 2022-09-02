@@ -308,7 +308,7 @@ h1 {
 	box-shadow: var(--shadow);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 930px) {
 	.content {
 		grid-template:
 			'player-input-1  player-input-2' auto
